@@ -1,3 +1,4 @@
+import binascii
 import rsa
 import uuid
 import hashlib
@@ -17,8 +18,8 @@ class User:
         return f"{self.name}"
 
     def sign(self, transaction):
-        transaction.signature = rsa.sign(
-            str(transaction).encode('ascii'), self.private_key, 'SHA-256')
+        transaction.signature = binascii.hexlify(rsa.sign(
+            str(transaction).encode('ascii'), self.private_key, 'SHA-256')).decode('ascii')
 
     def verify(self, transaction):
         try:
