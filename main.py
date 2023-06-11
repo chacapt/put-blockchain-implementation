@@ -46,12 +46,13 @@ class Transaction:
         self.receiver = receiver
         self.amount = amount
         self.signature = 0
+        self.sign_transaction()
 
     def __str__(self):
         return f"Id: {self.id}\n{self.sender} -> {self.receiver}: {self.amount}"
 
     def sign_transaction(self):
-        self.signature = self.sender.sign(self)
+        self.sender.sign(self)
 
 
 class Block:
