@@ -71,7 +71,11 @@ class Block:
         return tmp
 
     def calc_hash(self):
-        return hashlib.sha256(str(self).encode()).hexdigest()
+        temp = str(self.prev_hash)
+        for x in self.transactions:
+            temp += str(x)
+        temp += str(self.proof_of_work)
+        return hashlib.sha256(temp.encode()).hexdigest()
 
     def add_transaction(self, transaction: Transaction):
         self.transactions.append(transaction)
