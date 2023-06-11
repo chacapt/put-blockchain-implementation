@@ -124,14 +124,13 @@ def print_all_blocks(block_list: Blockchain):
 
 
 if __name__ == "__main__":
+    blockchain = Blockchain()
     users = initialize_user_list()
-    blocks = initialize_block_list()
-    current_last_block = blocks[0]
+    transactions1 = [Transaction(users[0], users[1], 1010)]
+    transactions1.append(Transaction(users[0], users[1], 1111))
+    transactions1.append(Transaction(users[1], users[0], 10))
+    newblock = Block(transactions1, blockchain.get_hash())
 
-    # add_transaction(current_last_block, users[0], users[1], 10)
-    # add_transaction(current_last_block, users[1], users[0], 100)
+    blockchain.add_block(newblock)
 
-    current_last_block = create_new_block(current_last_block, blocks)
-    # add_transaction(current_last_block, users[0], users[1], 10)
-    calculate_proof_of_work(blocks[0])
-    print_all_blocks(blocks)
+    print_all_blocks(blockchain)
