@@ -80,15 +80,14 @@ class Blockchain:
 
     def add_block(self, new_block: Block):
         new_block.prev_hash = self.chain[-1].hash
-        calculate_proof_of_work(new_block)
+        self.calculate_proof_of_work(new_block)
         self.chain.append(new_block)
 
-
-def calculate_proof_of_work(block: Block):
-    block_hash = block.calc_hash()
-    while not block_hash.startswith("0" * numberOfZeros):
-        block.proof_of_work += 1
+    def calculate_proof_of_work(self, block: Block):
         block_hash = block.calc_hash()
+        while not block_hash.startswith("0" * numberOfZeros):
+            block.proof_of_work += 1
+            block_hash = block.calc_hash()
 
 
 def initialize_user_list():
