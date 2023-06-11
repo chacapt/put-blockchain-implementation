@@ -85,7 +85,7 @@ class Blockchain:
 
 
 def calculate_proof_of_work(block: Block):
-    block_hash = block.hash
+    block_hash = block.calc_hash()
     while not block_hash.startswith("0" * numberOfZeros):
         block.proof_of_work += 1
         block_hash = block.calc_hash()
