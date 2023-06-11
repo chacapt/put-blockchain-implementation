@@ -42,23 +42,25 @@ class Transaction:
 
 class Block:
     def __init__(self, transactions, prev_hash):
-        self.prevHash = prev_hash
+        self.prev_hash = prev_hash
         self.transactions = transactions
-        self.proofOfWork = 0
-        self.hash = self.calcHash()
+        self.proof_of_work = 0
+        self.hash = self.calc_hash()
 
     def __str__(self):
-        tmp = f"Hash: {self.prevHash}\nTransactions ------\n\n"
+        tmp = f"Hash: {self.prev_hash}\nTransactions ------\n\n"
         for x in self.transactions:
             tmp += f"{str(x)}\n"
             tmp += f"Signature: {x.signature}\n\n"
-        tmp += f"End Transactions ------\nProof of work: {self.proofOfWork}"
+        tmp += f"End Transactions ------\nProof of work: {self.proof_of_work}"
         return tmp
 
-    def calcHash(self):
-        print("ok")
-    # def add_transaction(self, transaction: Transaction):
-    # 	self.transactions.append(transaction)
+    def calc_hash(self):
+        return hashlib.sha256(str(self).encode()).hexdigest()
+
+    def add_transaction(self, transaction: Transaction):
+        self.transactions.append(transaction)
+        self.hash = self.calc_hash()
 
 
 class Blockchain:
