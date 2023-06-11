@@ -63,7 +63,7 @@ class Block:
         self.hash = self.calc_hash()
 
     def __str__(self):
-        tmp = f"Hash: {self.prev_hash}\nTransactions ------\n\n"
+        tmp = f"Hash: {self.hash}\nTransactions ------\n\n"
         for x in self.transactions:
             tmp += f"{str(x)}\n"
             tmp += f"Signature: {x.signature}\n\n"
