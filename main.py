@@ -88,6 +88,10 @@ class Blockchain:
         new_block.prev_hash = self.chain[-1].hash
         new_block.calculate_proof_of_work()
         self.chain.append(new_block)
+        return new_block.hash
+
+    def get_hash(self):
+        return self.chain[-1].hash
 
 
 def initialize_user_list():
