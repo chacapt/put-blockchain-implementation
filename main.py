@@ -69,6 +69,12 @@ class Block:
         self.transactions.append(transaction)
         self.hash = self.calc_hash()
 
+    def calculate_proof_of_work(self):
+        block_hash = self.calc_hash()
+        while not block_hash.startswith("0" * numberOfZeros):
+            self.proof_of_work += 1
+            block_hash = self.calc_hash()
+
 
 class Blockchain:
 
@@ -80,14 +86,8 @@ class Blockchain:
 
     def add_block(self, new_block: Block):
         new_block.prev_hash = self.chain[-1].hash
-        self.calculate_proof_of_work(new_block)
+        new_block.calculate_proof_of_work()
         self.chain.append(new_block)
-
-    def calculate_proof_of_work(self, block: Block):
-        block_hash = block.calc_hash()
-        while not block_hash.startswith("0" * numberOfZeros):
-            block.proof_of_work += 1
-            block_hash = block.calc_hash()
 
 
 def initialize_user_list():
