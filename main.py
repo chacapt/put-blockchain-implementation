@@ -50,6 +50,9 @@ class Transaction:
     def __str__(self):
         return f"Id: {self.id}\n{self.sender} -> {self.receiver}: {self.amount}"
 
+    def sign_transaction(self):
+        self.signature = self.sender.sign(self)
+
 
 class Block:
 
