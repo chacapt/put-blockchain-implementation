@@ -104,8 +104,9 @@ class Blockchain:
         self = Blockchain()
 
 
-    public_key, private_key = rsa.newkeys(keyLength)
-    users.append(User("Monika", private_key, public_key))
+def initialize_user_list():
+    users = [(User("Adam", '123'))]
+    users.append(User("Monika", '321'))
 
     return users
 
