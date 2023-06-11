@@ -93,11 +93,9 @@ class Blockchain:
     def get_hash(self):
         return self.chain[-1].hash
 
+    def remove_blockchain(self):
+        self = Blockchain()
 
-def initialize_user_list():
-    users = []
-    public_key, private_key = rsa.newkeys(keyLength)
-    users.append(User("Adam", private_key, public_key))
 
     public_key, private_key = rsa.newkeys(keyLength)
     users.append(User("Monika", private_key, public_key))
