@@ -10,8 +10,9 @@ numberOfZeros = 5  # Number of zeros in proof of work
 
 class User:
 
-    def __init__(self, name: str, private_key, public_key):
+    def __init__(self, name: str, password, private_key, public_key):
         self.name = name
+        self.token = hashlib.sha256(password.encode()).hexdigest()
         self.private_key = private_key
         self.public_key = public_key
 
