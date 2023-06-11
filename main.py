@@ -37,7 +37,7 @@ class Transaction:
         self.signature = 0
 
     def __str__(self):
-        return f"Id: {self.id}\nSender: {self.sender}\nReceiver: {self.receiver}\nAmount: {self.amount}"
+        return f"Id: {self.id}\n{self.sender} -> {self.receiver}: {self.amount}"
 
 
 class Block:
