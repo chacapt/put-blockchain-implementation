@@ -10,14 +10,18 @@ numberOfZeros = 5  # Number of zeros in proof of work
 
 class User:
 
-    def __init__(self, name: str, password, private_key, public_key):
+    def __init__(self, name: str, password):
         self.name = name
         self.token = hashlib.sha256(password.encode()).hexdigest()
-        self.private_key = private_key
-        self.public_key = public_key
+        self.public_key: rsa.PublicKey
+        self.private_key: rsa.PrivateKey
+        self.__generate_key_pair()
 
     def __str__(self):
         return f"{self.name}"
+
+    def __generate_key_pair(self):
+        self.public_key, self.private_key = rsa.newkeys(keyLength)
 
     def sign(self, transaction):
         transaction.signature = binascii.hexlify(
