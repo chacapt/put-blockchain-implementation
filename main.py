@@ -9,6 +9,7 @@ numberOfZeros = 5  # Number of zeros in proof of work
 
 
 class User:
+
     def __init__(self, name: str, private_key, public_key):
         self.name = name
         self.private_key = private_key
@@ -18,17 +19,22 @@ class User:
         return f"{self.name}"
 
     def sign(self, transaction):
-        transaction.signature = binascii.hexlify(rsa.sign(
-            str(transaction).encode('ascii'), self.private_key, 'SHA-256')).decode('ascii')
+        transaction.signature = binascii.hexlify(
+            rsa.sign(
+                str(transaction).encode('ascii'), self.private_key,
+                'SHA-256')).decode('ascii')
 
     def verify(self, transaction):
         try:
-            return rsa.verify(str(transaction).encode('ascii'), transaction.signature, self.public_key) == 'SHA-256'
+            return rsa.verify(
+                str(transaction).encode('ascii'), transaction.signature,
+                self.public_key) == 'SHA-256'
         except Exception:
             return False
 
 
 class Transaction:
+
     def __init__(self, sender: User, receiver: User, amount: float):
         self.id = uuid.uuid1()
         self.sender = sender
@@ -41,6 +47,7 @@ class Transaction:
 
 
 class Block:
+
     def __init__(self, transactions, prev_hash):
         self.prev_hash = prev_hash
         self.transactions = transactions
@@ -64,6 +71,7 @@ class Block:
 
 
 class Blockchain:
+
     def __init__(self):
         self.chain = [self.__create_init_block]
 
@@ -71,7 +79,14 @@ class Blockchain:
         return Block([], 0)
 
     def add_block(self, new_block: Block):
-        new_block.prevHash = self.chain[-1].__hash__
+        new_block.prev_hash = self.chain[-1].hash
+
+
+def calculate_proof_of_work(block: Block):
+    block_hash = block.hash
+    while not block_hash.startswith("0" * numberOfZeros):
+        block.proof_of_work += 1
+        block_hash = block.calc_hash()
 
 
 def initialize_user_list():
@@ -86,18 +101,11 @@ def initialize_user_list():
 
 
 def initialize_block_list():
-    return [Block(0)]
+    return [Block([], 0)]
 
 
 def get_hash_of_block(block: Block):
     return hashlib.sha256(str(block).encode()).hexdigest()
-
-
-def calculate_proof_of_work(block: Block):
-    block_hash = hashlib.sha256(str(block).encode()).hexdigest()
-    while not block_hash.startswith('0' * numberOfZeros):
-        block.proofOfWork += 1
-        block_hash = get_hash_of_block(block)
 
 
 def add_transaction(block: Block, sender: User, receiver: User, amount: float):
@@ -108,9 +116,9 @@ def add_transaction(block: Block, sender: User, receiver: User, amount: float):
 
 def create_new_block(block: Block, block_list):
     calculate_proof_of_work(block)
-    new_block = Block(get_hash_of_block(block))
-    block_list.append(new_block)
-    return new_block
+    # new_block = Block(get_hash_of_block(block))
+    # block_list.append(new_block)
+    # return new_block
 
 
 def print_all_blocks(block_list):
@@ -120,7 +128,7 @@ def print_all_blocks(block_list):
         print("End block ---------------------------------------------")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     users = initialize_user_list()
     blocks = initialize_block_list()
     current_last_block = blocks[0]
