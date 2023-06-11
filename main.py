@@ -73,13 +73,15 @@ class Block:
 class Blockchain:
 
     def __init__(self):
-        self.chain = [self.__create_init_block]
+        self.chain = [self.create_init_block()]
 
-    def __create_init_block(self):
+    def create_init_block(self):
         return Block([], 0)
 
     def add_block(self, new_block: Block):
         new_block.prev_hash = self.chain[-1].hash
+        calculate_proof_of_work(new_block)
+        self.chain.append(new_block)
 
 
 def calculate_proof_of_work(block: Block):
