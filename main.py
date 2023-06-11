@@ -111,29 +111,8 @@ def initialize_user_list():
     return users
 
 
-def initialize_block_list():
-    return [Block([], 0)]
-
-
-def get_hash_of_block(block: Block):
-    return hashlib.sha256(str(block).encode()).hexdigest()
-
-
-def add_transaction(block: Block, sender: User, receiver: User, amount: float):
-    transaction = Transaction(sender, receiver, amount)
-    sender.sign(transaction)
-    block.add_transaction(transaction)
-
-
-def create_new_block(block: Block, block_list):
-    calculate_proof_of_work(block)
-    # new_block = Block(get_hash_of_block(block))
-    # block_list.append(new_block)
-    # return new_block
-
-
-def print_all_blocks(block_list):
-    for x in block_list:
+def print_all_blocks(block_list: Blockchain):
+    for x in block_list.chain:
         print("\nBlock ---------------------------------------------")
         print(x)
         print("End block ---------------------------------------------")
