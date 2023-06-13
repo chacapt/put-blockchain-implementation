@@ -204,9 +204,7 @@ def load_blockchain_network():
     return (blockchain, users)
 
 
-if __name__ == "__main__":
-    users, blockchain = load_blockchain_network()
-    blockchain_network = NetworkNodes(users, blockchain)
+def login_menu(blockchain_network):
     while 1:
         print("********** Blockchain System Login  **********")
         print("1.Create new account")
@@ -219,11 +217,16 @@ if __name__ == "__main__":
                 sing_up(blockchain_network)
             case 2:
                 login(blockchain_network)
+                return True
             case 3:
-                os.system('cls')
+                login_menu_msg("Exiting...")
                 break
             case _:
-                os.system('cls')
-                print("Wrong Choice!")
-                time.sleep(0.5)
-        os.system('cls')
+                login_menu_msg("Wrong Choice!")
+
+
+def login_menu_msg(arg0):
+    os.system('cls')
+    print(arg0)
+    time.sleep(0.7)
+    os.system('cls')
