@@ -2,6 +2,9 @@ import binascii
 import rsa
 import uuid
 import hashlib
+import os
+import pickle
+import time
 
 # Parameters
 keyLength = 1024  # Do not change!!!
@@ -10,9 +13,9 @@ numberOfZeros = 5  # Number of zeros in proof of work
 
 class User:
 
-    def __init__(self, name: str, password):
+    def __init__(self, name: str, pwd_hash):
         self.name = name
-        self.token = hashlib.sha256(password.encode()).hexdigest()
+        self.token = pwd_hash
         self.public_key: rsa.PublicKey
         self.private_key: rsa.PrivateKey
         self.__generate_key_pair()
@@ -29,14 +32,6 @@ class User:
                 str(transaction).encode('ascii'), self.private_key,
                 'SHA-256')).decode('ascii')
 
-    def verify(self, transaction):
-        try:
-            return rsa.verify(
-                str(transaction).encode('ascii'), transaction.signature,
-                self.public_key) == 'SHA-256'
-        except Exception:
-            return False
-
 
 class Transaction:
 
@@ -45,7 +40,7 @@ class Transaction:
         self.sender = sender
         self.receiver = receiver
         self.amount = amount
-        self.signature = 0
+        self.signature = b'0'
         self.sign_transaction()
 
     def __str__(self):
@@ -148,14 +143,84 @@ def print_all_blocks(block_list: Blockchain):
         print("End block ---------------------------------------------")
 
 
+def sing_up(network: NetworkNodes):
+    name = input("Enter username: ")
+    pwd_hash = ''
+    while 1:
+        password = input("Enter password: ")
+        conf_password = input("Confirm password: ")
+        if conf_password == password:
+            pwd_hash = hashlib.md5(conf_password.encode()).hexdigest()
+            break
+        else:
+            sing_up_error_msg("Passwords are not the same!")
+    while 1:
+        if network.get_user(name):
+            network.users.append(User(name, pwd_hash))
+            sing_up_error_msg("You have registered successfully!")
+            break
+        else:
+            print("Name is taken, please enter again")
+            name = input("Enter username: ")
+
+
+def sing_up_error_msg(arg0):
+    print(arg0)
+    time.sleep(2)
+    os.system('cls')
+
+
+def login(network: NetworkNodes):
+    user = User('', '')
+    while 1:
+        name = input("Enter username: ")
+        password = input("Enter password: ")
+        pwd_hash = pwd_hash = hashlib.md5(password.encode()).hexdigest()
+
+        if [user for user in network.users if user.name == name]:
+            if user.token == pwd_hash:
+                print("Welcome again!")
+                break
+        else:
+            print("User does not exist or given password is wrong! \n")
+            if input("Do you want to exit? (yes/no): ") == 'yes':
+                break
+
+
+def load_blockchain_network():
+    blockchain_file = "blockchain.pkl"
+    users_file = "users.pkl"
+    if os.path.exists(blockchain_file):
+        with open(blockchain_file, "rb") as file:
+            blockchain = pickle.load(file)
+    else:
+        blockchain = Blockchain()
+
+    if os.path.exists(users_file):
+        with open(users_file, "rb") as file:
+            users = pickle.load(file)
+    else:
+        users = []
+    return (blockchain, users)
+
+
 if __name__ == "__main__":
-    blockchain = Blockchain()
-    users = initialize_user_list()
-    transactions1 = [Transaction(users[0], users[1], 1010)]
-    transactions1.append(Transaction(users[0], users[1], 1111))
-    transactions1.append(Transaction(users[1], users[0], 10))
-    newblock = Block(transactions1, blockchain.get_hash())
+    users, blockchain = load_blockchain_network()
+    blockchain_network = NetworkNodes(users, blockchain)
+    while 1:
+        print("********** Login System **********")
+        print("1.Create new account")
+        print("2.Login")
+        print("3.Exit")
+        choice = int(input("Enter your choice: "))
 
-    blockchain.add_block(newblock)
-
-    print_all_blocks(blockchain)
+        match choice:
+            case 1:
+                sing_up(blockchain_network)
+            case 2:
+                login(blockchain_network)
+            case 3:
+                break
+            case _:
+                print("Wrong Choice!")
+        os.system('cls')
