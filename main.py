@@ -106,7 +106,7 @@ class Blockchain:
 
 class NetworkNodes:
 
-    def __init__(self, blockchain: Blockchain, users):
+    def __init__(self, blockchain: Blockchain, users: list[User]):
         self.blockchain = blockchain
         self.users = users
 
@@ -183,7 +183,7 @@ def login(network: NetworkNodes):
                 break
         else:
             print("User does not exist or given password is wrong! \n")
-            if input("Do you want to exit? (yes/no): ") == 'yes':
+            if input("Do you want to exit? (yes/no): ").lower() == 'yes':
                 break
 
 
@@ -210,7 +210,7 @@ def login_menu(blockchain_network):
         print("1.Create new account")
         print("2.Login")
         print("3.Exit")
-        choice = int(input("Enter your choice: "))
+        choice = int(input("Enter your choice (1-3): "))
 
         match choice:
             case 1:
