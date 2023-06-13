@@ -160,7 +160,7 @@ def sing_up(network: NetworkNodes):
             sing_up_error_msg("You have registered successfully!")
             break
         else:
-            print("Name is taken, please enter again")
+            print("Name is taken, please enter again!")
             name = input("Enter username: ")
 
 
