@@ -27,10 +27,8 @@ class User:
         self.public_key, self.private_key = rsa.newkeys(keyLength)
 
     def sign(self, transaction):
-        transaction.signature = binascii.hexlify(
-            rsa.sign(
-                str(transaction).encode('ascii'), self.private_key,
-                'SHA-256')).decode('ascii')
+        transaction.signature = rsa.sign(
+            str(transaction).encode('ascii'), self.private_key, 'SHA-256')
 
 
 class Transaction:
@@ -59,11 +57,11 @@ class Block:
         self.hash = self.calc_hash()
 
     def __str__(self):
-        tmp = f"Hash: {self.hash}\nTransactions ------\n\n"
+        tmp = f"\nHash: {self.hash}\nTransactions ------\n\n"
         for x in self.transactions:
             tmp += f"{str(x)}\n"
             tmp += f"Signature: {x.signature}\n\n"
-        tmp += f"End Transactions ------\nProof of work: {self.proof_of_work}"
+        tmp += f"End Transactions ------\nProof of work: {self.proof_of_work}\n"
         return tmp
 
     def calc_hash(self):
@@ -88,6 +86,14 @@ class Blockchain:
     def __init__(self):
         self.chain = [self.create_init_block()]
 
+    def __str__(self):
+        tmp = ''
+        for x in self.chain:
+            tmp += "\nBlock ---------------------------------------------"
+            tmp += str(x)
+            tmp += "End block ---------------------------------------------"
+        return tmp
+
     def create_init_block(self):
         return Block([], 0)
 
@@ -109,14 +115,21 @@ class NetworkNodes:
         self.blockchain = blockchain
         self.users = users
 
-    def get_user(self, name) -> rsa.PublicKey:
-        return next((user.public_key for user in self.users if user.name == name))
+    def get_userPubKey(self, sender: User) -> rsa.PublicKey:
+        return next((user.public_key for user in self.users if user.name == sender.name))
+
+    def find_user(self, name):
+        try:
+            next((user.public_key for user in self.users if user.name == name))
+        except Exception:
+            return False
+        return True
 
     def verify_transaction(self, transaction: Transaction):
         try:
             return rsa.verify(
                 str(transaction).encode('ascii'), transaction.signature,
-                self.get_user(transaction.sender)) == 'SHA-256'
+                self.get_userPubKey(transaction.sender)) == 'SHA-256'
         except Exception:
             return False
 
@@ -151,6 +164,8 @@ def sing_up(network: NetworkNodes):
     name = input("Enter username: ")
     pwd_hash = ''
     while 1:
+        os.system('cls')
+        print("Username: ", name)
         password = input("Enter password: ")
         conf_password = input("Confirm password: ")
         if conf_password == password:
@@ -158,9 +173,9 @@ def sing_up(network: NetworkNodes):
             break
         else:
             sing_up_error_msg("Passwords are not the same!")
-            os.system('cls')
+
     while 1:
-        if network.get_user(name):
+        if not network.find_user(name):
             network.users.append(User(name, pwd_hash))
             sing_up_error_msg("You have registered successfully!")
             os.system('cls')
@@ -183,12 +198,18 @@ def login(network: NetworkNodes):
         os.system('cls')
         name = input("Enter username: ")
         password = input("Enter password: ")
-        pwd_hash = pwd_hash = hashlib.md5(password.encode()).hexdigest()
-
-        if [user for user in network.users if user.name == name]:
+        user = next((u for u in network.users if u.name == name), None)
+        if user != None:
+            pwd_hash = hashlib.md5(password.encode()).hexdigest()
             if user.token == pwd_hash:
+                os.system('cls')
                 print("Welcome again!")
+                time.sleep(0.4)
                 return user
+            else:
+                print("User does not exist or given password is wrong! \n")
+                if input("Do you wish to return? (yes/no): ").lower() == 'yes':
+                    return None
         else:
             print("User does not exist or given password is wrong! \n")
             if input("Do you wish to return? (yes/no): ").lower() == 'yes':
@@ -208,7 +229,7 @@ def load_blockchain_network():
         with open(users_file, "rb") as file:
             users = pickle.load(file)
     else:
-        users = []
+        users: list[User] = []
     return (blockchain, users)
 
 
@@ -229,7 +250,7 @@ def login_menu(blockchain_network):
                     return user
             case 3:
                 login_menu_msg("Exiting...")
-                break
+                exit()
             case _:
                 login_menu_msg("Wrong Choice!")
         os.system('cls')
@@ -244,10 +265,10 @@ def login_menu_msg(arg0):
 
 def add_transaction(blockchain_network: NetworkNodes, currentUser: User):
     os.system('cls')
-    print("----- List of recievers -----")
+    print("----- List of recipients -----")
     for user in enumerate(blockchain_network.users):
-        if user[1].name != currentUser:
-            print(user[0], user[1].name)
+        if user[1].name != currentUser.name:
+            print(user[0]+1, user[1].name)
     print("-----------------------------")
     choice = int(input("Pick position of the recipient: "))
     amount = float(input("Amount of the transaction: "))
@@ -275,8 +296,12 @@ def show_transactions(transactions: list[Transaction]):
 
 
 def mine_block(blockchain_network: NetworkNodes, transactions: list[Transaction]):
-    block = Block(transactions, blockchain_network.blockchain.get_tail_hash())
     os.system('cls')
+    if not transactions:
+        print("There are no transations!")
+        time.sleep(0.6)
+        return blockchain_network
+    block = Block(transactions, blockchain_network.blockchain.get_tail_hash())
     print("Mining the new block...")
     blockchain_network_new: NetworkNodes = blockchain_network.mine_block(block)
     mine_msg("Block has been mined", 0.5)
@@ -295,9 +320,8 @@ def mine_msg(arg0, arg1):
     time.sleep(arg1)
 
 
-def blockchain_user_menu(blockchain_network: NetworkNodes, user: User):
-    transactions: list[Transaction] = []
-    print('hello to the blockchain')
+def blockchain_user_menu(blockchain_network: NetworkNodes, user: User, transaction: list[Transaction]):
+    os.system('cls')
     while 1:
         print("Currently logged as: ", user.name,
               "\t\tTransactions: ", len(transactions))
@@ -307,7 +331,7 @@ def blockchain_user_menu(blockchain_network: NetworkNodes, user: User):
         print("3. Show transactions not in blockchain")
         print("4. Mine block of current transactions")
         print("5. Logout")
-        choice = input("Enter your choice (1-5): ")
+        choice = int(input("Enter your choice (1-5): "))
 
         match choice:
             case 1:
@@ -338,6 +362,9 @@ def blockchain_user_menu(blockchain_network: NetworkNodes, user: User):
             case _:
                 login_menu_msg("Wrong Choice!")
         os.system('cls')
+    users, blockchain = blockchain_network.users, blockchain_network.blockchain
+    save_objects(blockchain, users)
+    return transactions
 
 
 def save_objects(blockchain: Blockchain, users: list[User]):
@@ -353,8 +380,9 @@ def save_objects(blockchain: Blockchain, users: list[User]):
 if __name__ == "__main__":
     users, blockchain = load_blockchain_network()
     blockchain_network = NetworkNodes(users, blockchain)
-    logged_user = login_menu(blockchain_network)
-    if logged_user != None:
-        blockchain_user_menu(blockchain_network, logged_user)
-    else:
-        exit()
+    transactions: list[Transaction] = []
+    while 1:
+        logged_user = login_menu(blockchain_network)
+        if logged_user != None:
+            transactions = blockchain_user_menu(
+                blockchain_network, logged_user, transactions)
