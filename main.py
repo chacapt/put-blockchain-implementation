@@ -208,7 +208,7 @@ if __name__ == "__main__":
     users, blockchain = load_blockchain_network()
     blockchain_network = NetworkNodes(users, blockchain)
     while 1:
-        print("********** Login System **********")
+        print("********** Blockchain System Login  **********")
         print("1.Create new account")
         print("2.Login")
         print("3.Exit")
@@ -220,7 +220,10 @@ if __name__ == "__main__":
             case 2:
                 login(blockchain_network)
             case 3:
+                os.system('cls')
                 break
             case _:
+                os.system('cls')
                 print("Wrong Choice!")
+                time.sleep(0.5)
         os.system('cls')
