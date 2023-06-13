@@ -112,8 +112,8 @@ class Blockchain:
 class NetworkNodes:
 
     def __init__(self, blockchain: Blockchain, users):
-        self.users = users
         self.blockchain = blockchain
+        self.users = users
 
     def get_user(self, name) -> rsa.PublicKey:
         return next((user.public_key for user in self.users if user.name == name))
