@@ -108,6 +108,23 @@ class Blockchain:
     def remove_blockchain(self):
         self = Blockchain()
 
+class NetworkNodes:
+    
+    def __init__(self, blockchain: Blockchain, users):
+        self.users = users
+        self.blockchain = blockchain
+    
+    def get_user(self, name):
+        return next((user.public_key for user in self.users if user.name == name), None)
+        
+    def verify_transaction(self, transaction):
+        try:
+            return rsa.verify(
+                str(transaction).encode('ascii'), transaction.signature,
+                self.get_user(self, transaction.sender)) == 'SHA-256'
+        except Exception:
+            return False
+        
 
 def initialize_user_list():
     users = [(User("Adam", '123'))]
