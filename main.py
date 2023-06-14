@@ -8,7 +8,7 @@ import time
 
 # Parameters
 keyLength = 1024  # Do not change!!!
-numberOfZeros = 5  # Number of zeros in proof of work
+numberOfZeros = 6  # Number of zeros in proof of work
 
 
 class User:
@@ -52,7 +52,7 @@ class Block:
 
     def __init__(self, transactions, prev_hash):
         self.prev_hash = prev_hash
-        self.transactions = transactions
+        self.transactions = transactions[:]
         self.proof_of_work = 0
         self.hash = self.calc_hash()
 
@@ -60,7 +60,7 @@ class Block:
         tmp = f"\nHash: {self.hash}\nTransactions ------\n\n"
         for x in self.transactions:
             tmp += f"{str(x)}\n"
-            tmp += f"Signature: {x.signature}\n\n"
+            tmp += f"Signature: {binascii.hexlify(x.signature).decode('ascii')}\n\n"
         tmp += f"End Transactions ------\nProof of work: {self.proof_of_work}\n"
         return tmp
 
@@ -101,6 +101,7 @@ class Blockchain:
         new_block.prev_hash = self.chain[-1].hash
         new_block.calculate_proof_of_work()
         self.chain.append(new_block)
+        print('ok')
 
     def get_tail_hash(self):
         return self.chain[-1].hash
