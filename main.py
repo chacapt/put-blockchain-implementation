@@ -105,9 +105,6 @@ class Blockchain:
     def get_tail_hash(self):
         return self.chain[-1].hash
 
-    def remove_blockchain(self):
-        self = Blockchain()
-
 
 class NetworkNodes:
 
