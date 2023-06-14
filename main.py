@@ -101,7 +101,6 @@ class Blockchain:
         new_block.prev_hash = self.chain[-1].hash
         new_block.calculate_proof_of_work()
         self.chain.append(new_block)
-        print('ok')
 
     def get_tail_hash(self):
         return self.chain[-1].hash
