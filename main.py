@@ -266,14 +266,18 @@ def login_menu_msg(arg0):
 def add_transaction(blockchain_network: NetworkNodes, currentUser: User):
     os.system('cls')
     print("----- List of recipients -----")
-    for user in enumerate(blockchain_network.users):
+    user_list: list[User] = blockchain_network.users[:]
+    for user in user_list:
+        if user.name == currentUser.name:
+            user_list.remove(user)
+    for user in enumerate(user_list):
         if user[1].name != currentUser.name:
             print(user[0]+1, user[1].name)
     print("-----------------------------")
     choice = int(input("Pick position of the recipient: "))
     amount = float(input("Amount of the transaction: "))
     transaction = Transaction(
-        currentUser, blockchain_network.users[choice-1], amount)
+        currentUser, user_list[choice-1], amount)
     os.system('cls')
     print("Verifying new transaction...")
     time.sleep(0.8)
