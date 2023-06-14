@@ -178,6 +178,8 @@ def sing_up(network: NetworkNodes):
         if not network.find_user(name):
             network.users.append(User(name, pwd_hash))
             sing_up_error_msg("You have registered successfully!")
+            users, blockchain = network.users, network.blockchain
+            save_objects(blockchain, users)
             os.system('cls')
             break
         else:
