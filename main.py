@@ -146,20 +146,6 @@ class NetworkNodes:
         return self
 
 
-def initialize_user_list():
-    users = [(User("Adam", '123'))]
-    users.append(User("Monika", '321'))
-
-    return users
-
-
-def print_all_blocks(block_list: Blockchain):
-    for x in block_list.chain:
-        print("\nBlock ---------------------------------------------")
-        print(x)
-        print("End block ---------------------------------------------")
-
-
 def sing_up(network: NetworkNodes):
     os.system('cls')
     name = input("Enter username: ")
