@@ -8,7 +8,7 @@ import time
 
 # Parameters
 keyLength = 1024  # Do not change!!!
-numberOfZeros = 6  # Number of zeros in proof of work
+numberOfZeros = 5  # Number of zeros in proof of work
 
 
 class User:
