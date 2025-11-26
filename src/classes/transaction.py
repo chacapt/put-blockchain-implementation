@@ -1,4 +1,4 @@
-from src.classes.user import User
+from classes.User import User
 import uuid
 
 

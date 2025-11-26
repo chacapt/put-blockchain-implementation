@@ -1,7 +1,7 @@
 import binascii
 import hashlib
 import os
-from classes.transaction import Transaction
+from classes.Transaction import Transaction
 
 
 class Block:
